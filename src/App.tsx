@@ -170,8 +170,8 @@ function App() {
 
     // score upward diagonals
     // for each row
-    for (let i = 0; i < numRows - 3; i++) {
-      for (let j = 0; j < numColumns - 3; j++) {
+    for (let i = 0; i < numColumns - 3; i++) {
+      for (let j = 0; j < numRows - 3; j++) {
         let window = [
           board[i][j],
           board[i + 1][j + 1],
@@ -184,13 +184,13 @@ function App() {
 
     // score downward diagonals
     // for each row
-    for (let i = numRows - 1; i > numRows - 3; i--) {
-      for (let j = 0; j < numColumns - 3; j++) {
+    for (let i = 0; i < numColumns - 3; i++) {
+      for (let j = 3; j < numRows; j++) {
         let window = [
           board[i][j],
-          board[i - 1][j + 1],
-          board[i - 2][j + 2],
-          board[i - 3][j + 3],
+          board[i + 1][j - 1],
+          board[i + 2][j - 2],
+          board[i + 3][j - 3],
         ];
         score = score + evaluateWindow(window, player);
       }
@@ -241,8 +241,8 @@ function App() {
 
     // check upward diagonals
     // for each row
-    for (let i = 0; i < numRows - 3; i++) {
-      for (let j = 0; j < numColumns - 3; j++) {
+    for (let i = 0; i < numColumns - 3; i++) {
+      for (let j = 0; j < numRows - 3; j++) {
         let window = [
           board[i][j],
           board[i + 1][j + 1],
@@ -261,13 +261,13 @@ function App() {
 
     // check downward diagonals
     // for each row
-    for (let i = numRows - 1; i > numRows - 4; i--) {
-      for (let j = 0; j < numColumns - 3; j++) {
+    for (let i = 0; i < numColumns - 3; i++) {
+      for (let j = 3; j < numRows; j++) {
         let window = [
           board[i][j],
-          board[i - 1][j + 1],
-          board[i - 2][j + 2],
-          board[i - 3][j + 3],
+          board[i + 1][j - 1],
+          board[i + 2][j - 2],
+          board[i + 3][j - 3],
         ];
         if (
           window.filter((piece) => {
@@ -329,7 +329,8 @@ function App() {
       let value = negativeInfinity;
 
       // random column start
-      let column = 0;
+      let column =
+        validColumns[Math.floor(Math.random() * validColumns.length)];
       for (let i = 0; i < validColumns.length; i++) {
         let boardCopy = [...board];
         boardCopy = placePiece(boardCopy, ai, validColumns[i]);
@@ -376,9 +377,9 @@ function App() {
 
   // check if anyone won, or if there was a draw
   function checkWin() {
-    if (isWinningMove(gameBoard, human)) setGameWonBy(human);
+    if (getValidColumns(gameBoard).length == 0) setGameWonBy(empty);
+    else if (isWinningMove(gameBoard, human)) setGameWonBy(human);
     else if (isWinningMove(gameBoard, ai)) setGameWonBy(ai);
-    else if (getValidColumns(gameBoard).length == 0) setGameWonBy(0);
   }
 
   // place the ai's calculated piece
@@ -415,9 +416,9 @@ function App() {
   // display the current turn, or who won
   function getDisplayText() {
     if (gameWonBy == human) return "You Win!";
-    else if (gameWonBy == ai) return "Ai Wins!";
+    else if (gameWonBy == ai) return "AI Wins!";
     else if (gameWonBy == empty) return "Draw!";
-    else return currentPlayer == human ? "Your Turn" : "Ai's Turn...";
+    else return currentPlayer == human ? "Your Turn" : "AI's Turn...";
   }
 
   // check if anyone has won yet
@@ -426,7 +427,11 @@ function App() {
   }
 
   return (
-    <div className="game-wrapper">
+    <div
+      className={`game-wrapper ${
+        gameWonBy == human ? "human-won" : gameWonBy == ai ? "ai-won" : ""
+      }`}
+    >
       <div className="background-wrapper">
         <div className="background"></div>
       </div>
@@ -450,18 +455,20 @@ function App() {
               >
                 {column.map((space, index) => {
                   return (
-                    <div
-                      className={`space ${
-                        space == human ? "human" : space == ai ? "ai" : ""
+                    <div className="space-wrapper" key={index}>
+                      <div
+                        className={`space ${
+                          space == human ? "human" : space == ai ? "ai" : ""
+                        }
+                      ${
+                        index == getEmptySpace(column) && !gameWonBy
+                          ? "valid"
+                          : ""
                       }
-                    ${
-                      index == getEmptySpace(column) && !gameWonBy
-                        ? "valid"
-                        : ""
-                    }
-                    `}
-                      key={index}
-                    ></div>
+                      `}
+                        key={index}
+                      ></div>
+                    </div>
                   );
                 })}
               </div>

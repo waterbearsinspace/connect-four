@@ -7,6 +7,8 @@
   align-items: center;
 
   color: var(--dark-color);
+
+  --piece-height: 65%;
 }
 
 .game-wrapper {
@@ -17,6 +19,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  --stripe-primary: rgb(255, 255, 255);
+  --stripe-secondary: hsl(from var(--stripe-primary) h s 85);
+
+  &.human-won {
+    --stripe-primary: var(--human-color);
+  }
+
+  &.ai-won {
+    --stripe-primary: var(--ai-color);
+  }
 }
 
 .background-wrapper {
@@ -32,9 +45,6 @@
 .background {
   width: 200%;
   height: 200%;
-
-  --stripe-primary: rgb(255, 255, 255);
-  --stripe-secondary: hsl(from var(--stripe-primary) h s 85);
 
   background-size: 18px 36px;
   background-image: linear-gradient(
@@ -72,7 +82,7 @@
   border: 2px solid var(--dark-color);
   border-radius: 1rem;
 
-  filter: drop-shadow(16px 16px 0px black);
+  filter: drop-shadow(16px 16px 0px hsl(from var(--dark-color) h s 20));
 
   padding-inline: 48px;
   z-index: 5;
@@ -113,26 +123,53 @@
     cursor: pointer;
   }
 
-  &:hover:not(.game-over) > .space.valid:not(.red):not(.blue) {
+  &:hover:not(.game-over) > * > .space.valid:not(.red):not(.blue) {
     background-color: hsl(from var(--human-color) h s 75);
+
+    transform: translateY(var(--piece-height));
   }
 }
 
-.space {
+.space-wrapper {
   aspect-ratio: 1;
-  width: 48px;
-
-  transform: rotate(180deg);
-  border-radius: 48px;
+  width: 60px;
+  border-radius: 60px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  transition: background-color 0.125s cubic-bezier(0.165, 0.84, 0.44, 1);
+  background-color: var(--background-color);
+
+  z-index: 5;
+
+  overflow: hidden;
+}
+
+.space {
+  --drop-speed: 0.35s;
+  aspect-ratio: 1;
+  width: 56px;
+
+  border-radius: 56px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1;
+
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+  transform: translateY(var(--piece-height));
 
   &:not(.human):not(.ai) {
     background-color: var(--background-color);
+  }
+
+  &.human,
+  &.ai {
+    animation: drop var(--drop-speed) forwards;
   }
 
   &.human {
@@ -140,5 +177,14 @@
   }
   &.ai {
     background-color: var(--ai-color);
+  }
+}
+
+@keyframes drop {
+  0% {
+    transform: translateY(var(--piece-height));
+  }
+  100% {
+    transform: translateY(0%);
   }
 }
