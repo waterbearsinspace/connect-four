@@ -17,6 +17,8 @@ function App() {
     [0, 0, 0, 0, 0, 0],
   ]);
 
+  const [playing, notPlaying] = useState<boolean>(false);
+
   // pieces, current player, and winner
   const empty = 0;
   const human = 1;
@@ -395,7 +397,7 @@ function App() {
 
   // place the player's piece
   function handleClick(column: number) {
-    if (!gameWonBy) {
+    if (!gameWonBy && isUnfilled(gameBoard[column])) {
       setGameBoard(
         placePiece(gameBoard, currentPlayer, column)
           ? placePiece(gameBoard, currentPlayer, column)!
