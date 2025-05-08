@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import confetti from "canvas-confetti";
 
 type board = number[][];
 
@@ -381,6 +382,14 @@ function App() {
     if (getValidColumns(gameBoard).length == 0) setGameWonBy(empty);
     else if (isWinningMove(gameBoard, human)) setGameWonBy(human);
     else if (isWinningMove(gameBoard, ai)) setGameWonBy(ai);
+
+    if (
+      getValidColumns(gameBoard).length == 0 ||
+      isWinningMove(gameBoard, human) ||
+      isWinningMove(gameBoard, ai)
+    ) {
+      confetti();
+    }
   }
 
   // place the ai's calculated piece
