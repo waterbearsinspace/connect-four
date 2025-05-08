@@ -17,8 +17,6 @@ function App() {
     [0, 0, 0, 0, 0, 0],
   ]);
 
-  const [playing, notPlaying] = useState<boolean>(false);
-
   // pieces, current player, and winner
   const empty = 0;
   const human = 1;
@@ -29,6 +27,7 @@ function App() {
   // constants
   const positiveInfinity = 9999999;
   const negativeInfinity = -9999999;
+  const maxSearchDepth = 4;
 
   // =================================
   // START AI SECTION
@@ -390,14 +389,20 @@ function App() {
       placePiece(
         gameBoard,
         ai,
-        minimax(gameBoard, 4, negativeInfinity, positiveInfinity, true)[0]!
+        minimax(
+          gameBoard,
+          maxSearchDepth,
+          negativeInfinity,
+          positiveInfinity,
+          true
+        )[0]!
       )!
     );
   }
 
   // place the player's piece
   function handleClick(column: number) {
-    if (!gameWonBy && isUnfilled(gameBoard[column])) {
+    if (!gameWonBy && isUnfilled(gameBoard[column]) && currentPlayer == human) {
       setGameBoard(
         placePiece(gameBoard, currentPlayer, column)
           ? placePiece(gameBoard, currentPlayer, column)!
